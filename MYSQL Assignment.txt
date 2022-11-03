@@ -1,0 +1,132 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| assignment         |
+| information_schema |
+| mysql              |
+| performance_schema |
+| students           |
+| sys                |
+| workers            |
++--------------------+
+7 rows in set (0.00 sec)
+
+mysql> use assignment;
+Database changed
+mysql> show tables;
++----------------------+
+| Tables_in_assignment |
++----------------------+
+| customers            |
+| orders               |
+| salespeople          |
++----------------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from salespeople;
++------+---------+-----------+------+
+| Snum | Sname   | City      | Comm |
++------+---------+-----------+------+
+| 1001 | peel    | London    |   12 |
+| 1002 | serres  | sanjose   |   13 |
+| 1003 | axelrod | newyork   |   10 |
+| 1004 | motika  | london    |   11 |
+| 1007 | rifkin  | barcelona |   15 |
++------+---------+-----------+------+
+5 rows in set (0.00 sec)
+
+mysql> select * from customers;
++------+----------+---------+------+
+| cnum | cname    | city    | snum |
++------+----------+---------+------+
+| 2001 | hoffman  | london  | 1001 |
+| 2002 | giovanni | rome    | 1003 |
+| 2003 | liu      | sanjose | 1002 |
+| 2004 | grass    | berlin  | 1002 |
+| 2006 | clemens  | london  | 1001 |
+| 2007 | pereira  | rome    | 1004 |
+| 2008 | cisneros | sanjose | 1007 |
++------+----------+---------+------+
+7 rows in set (0.00 sec)
+
+mysql> select * from orders;
++------+---------+------------+------+------+
+| onum | amt     | odate      | cnum | snum |
++------+---------+------------+------+------+
+| 3001 |   18.69 | 1990-10-03 | 2008 | 1007 |
+| 3003 |  767.19 | 1990-10-03 | 2001 | 1001 |
+| 3002 |  1900.1 | 1990-10-03 | 2007 | 1004 |
+| 3005 | 5160.45 | 1990-10-03 | 2003 | 1002 |
+| 3006 | 1098.16 | 1990-10-03 | 2008 | 1007 |
+| 3009 | 1713.23 | 1990-10-04 | 2002 | 1003 |
+| 3007 |   75.75 | 1990-10-04 | 2004 | 1002 |
+| 3008 |    4273 | 1990-10-05 | 2006 | 1001 |
+| 3010 | 1309.95 | 1990-10-06 | 2004 | 1002 |
+| 3011 | 9891.88 | 1990-10-06 | 2006 | 1001 |
++------+---------+------------+------+------+
+10 rows in set (0.00 sec)
+
+
+1. Count the number of Salesperson whose name begin with ‘a’/’A’.
+
+mysql> select sname,count(*) as count from salespeople where sname like 'a%';
++---------+-------+
+| sname   | count |
++---------+-------+
+| axelrod |     1 |
++---------+-------+
+1 row in set (0.00 sec)
+
+2. Display all the Salesperson whose all orders worth is more than Rs. 2000.
+
+mysql> select * from salespeople
+    -> where exists(select * from orders where amt > 2000 and salespeople.snum=orders.snum);
++------+--------+---------+------+
+| Snum | Sname  | City    | Comm |
++------+--------+---------+------+
+| 1001 | peel   | London  |   12 |
+| 1002 | serres | sanjose |   13 |
++------+--------+---------+------+
+2 rows in set (0.00 sec)
+
+3. Count the number of Salesperson belonging to Newyork.
+
+mysql> select sname,city,count(*) as total from salespeople where city='newyork';
++---------+---------+-------+
+| sname   | city    | total |
++---------+---------+-------+
+| axelrod | newyork |     1 |
++---------+---------+-------+
+1 row in set (0.06 sec)
+
+4. Display the number of Salespeople belonging to London and belonging to Paris.
+
+
+mysql> select city,count(*) as total from salespeople where city in ('london','paris');
++--------+-------+
+| city   | total |
++--------+-------+
+| London |     2 |
++--------+-------+
+1 row in set (0.00 sec)
+
+5.Display the number of orders taken by each Salesperson and their date of orders.
+
+
+mysql> select  odate ,snum,count(*) as total from orders group by odate,snum;
++------------+------+-------+
+| odate      | snum | total |
++------------+------+-------+
+| 1990-10-03 | 1007 |     2 |
+| 1990-10-03 | 1001 |     1 |
+| 1990-10-03 | 1004 |     1 |
+| 1990-10-03 | 1002 |     1 |
+| 1990-10-04 | 1003 |     1 |
+| 1990-10-04 | 1002 |     1 |
+| 1990-10-05 | 1001 |     1 |
+| 1990-10-06 | 1002 |     1 |
+| 1990-10-06 | 1001 |     1 |
++------------+------+-------+
+9 rows in set (0.06 sec)
+
